@@ -1,0 +1,59 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: gpu-screen-recorder
+Upstream-Contact: dec05eba <dec05eba@protonmail.com>
+Source: https://repo.dec05eba.com/gpu-screen-recorder
+
+Files: *
+Copyright: dec05eba <dec05eba@protonmail.com>
+License: GPL-3
+
+Files: external/NvFBC.h external/nvEncodeAPI.h
+Copyright: 2010-2022 NVIDIA Corporation
+License: Expat
+
+Files: external/stb_image_write.h
+Copyright: 2017 Sean Barrett
+License: Expat or public-domain
+
+Files: external/sj.h
+Copyright: 2025 rxi
+License: public-domain
+
+Files: protocol/xdg-output-unstable-v1.xml
+Copyright: 2017 Red Hat Inc.
+License: Expat
+
+Files: protocol/color-management-v1.xml
+Copyright: 2019 Sebastian Wick
+           2019 Erwin Burema
+License: Expat
+
+Files: debian/*
+Copyright: 2026 Dario Griffo <dariogriffo@gmail.com>
+License: GPL-3
+
+License: GPL-3
+ On Debian systems, the complete text of the GNU General Public
+ License, version 3, can be found in /usr/share/common-licenses/GPL-3.
+
+License: Expat
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+License: public-domain
+ The author places the file in the public domain; no warranty is implied.

@@ -1,0 +1,144 @@
+name: Build gpu-screen-recorder for Debian
+
+on:
+  workflow_dispatch:
+    inputs:
+      gsr_version:
+        description: The upstream tag of gpu-screen-recorder to build (e.g. 6.1.3).
+        type: string
+        required: true
+      build_version:
+        description: The build (packaging) version.
+        type: string
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  source:
+    name: Fetch and verify upstream source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Checks the tag against upstream-tags.lock and the LICENSE hash, then
+      # archives the tagged commit. Every later job builds from this one tarball.
+      - name: Create orig tarball
+        run: ./fetch_source.sh ${{ inputs.gsr_version }}
+
+      - name: Upload source
+        uses: actions/upload-artifact@v4
+        with:
+          name: orig
+          path: |
+            gpu-screen-recorder_*.orig.tar.gz
+            upstream-tags.lock
+
+  build:
+    name: Build ${{ matrix.dist }}
+    runs-on: ubuntu-latest
+    needs: source
+    strategy:
+      fail-fast: true
+      matrix:
+        # Jammy is left out: its ffmpeg 4.4 and Vulkan headers are too old
+        # for upstream's Vulkan encoder.
+        dist: [bookworm, trixie, forky, sid, noble, questing, resolute]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download source
+        uses: actions/download-artifact@v4
+        with:
+          name: orig
+
+      - name: Build .deb
+        run: ./build_deb.sh ${{ inputs.gsr_version }} ${{ inputs.build_version }} ${{ matrix.dist }}
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-${{ matrix.dist }}
+          path: out/*.deb
+
+  build-src:
+    name: Build source packages
+    runs-on: ubuntu-latest
+    needs: source
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download source
+        uses: actions/download-artifact@v4
+        with:
+          name: orig
+
+      - name: Install dpkg-dev
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends dpkg-dev
+
+      - name: Build source packages
+        run: ./build_src.sh ${{ inputs.gsr_version }} ${{ inputs.build_version }}
+
+      - name: Upload source packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-artifact
+          path: |
+            gpu-screen-recorder_*.dsc
+            gpu-screen-recorder_*.debian.tar.xz
+
+  release:
+    name: Release gpu-screen-recorder for Debian
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: [build, build-src]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download source
+        uses: actions/download-artifact@v4
+        with:
+          name: orig
+
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: deb-*
+          merge-multiple: true
+
+      - name: Download source packages
+        uses: actions/download-artifact@v4
+        with:
+          name: source-artifact
+
+      - name: Publish Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          files: |
+            gpu-screen-recorder_*.deb
+            gpu-screen-recorder_*.dsc
+            gpu-screen-recorder_*.orig.tar.gz
+            gpu-screen-recorder_*.debian.tar.xz
+          name: ${{ inputs.gsr_version }}+${{ inputs.build_version }}
+          tag_name: ${{ inputs.gsr_version }}+${{ inputs.build_version }}
+          fail_on_unmatched_files: true
+
+      # A tag seen for the first time was appended to the lock by
+      # fetch_source.sh; commit it so a later move of that tag is caught.
+      - name: Commit new tag pin
+        run: |
+          if git diff --quiet -- upstream-tags.lock; then
+            echo "Lock unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add upstream-tags.lock
+          git commit -m "Pin upstream tag ${{ inputs.gsr_version }}"
+          git push

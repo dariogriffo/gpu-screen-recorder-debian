@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+# gsr-kms-server needs CAP_SYS_ADMIN to capture a monitor through KMS on
+# AMD/Intel (and NVIDIA Wayland) without the desktop portal; without it every
+# recording asks for a password. dpkg does not preserve file capabilities, so
+# they are set here, as upstream's install script does.
+if [ "$1" = "configure" ]; then
+    if command -v setcap >/dev/null 2>&1; then
+        setcap cap_sys_admin+ep /usr/bin/gsr-kms-server || \
+            echo "gpu-screen-recorder: could not set cap_sys_admin on /usr/bin/gsr-kms-server; monitor capture will prompt for a password" >&2
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0

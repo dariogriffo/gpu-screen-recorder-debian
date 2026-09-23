@@ -1,0 +1,13 @@
+# .deb Packages
+*.deb
+out/
+
+# Build inputs/outputs
+*.orig.tar.gz
+*.dsc
+*.debian.tar.xz
+*.buildinfo
+*.changes
+
+.idea/*
+.DS_Store

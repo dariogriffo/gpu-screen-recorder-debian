@@ -1,0 +1,72 @@
+name: Check for new gpu-screen-recorder release
+
+on:
+  schedule:
+    # Hourly, offset to avoid the top-of-hour rush.
+    - cron: "23 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: check-upstream
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write   # required to dispatch release.yml
+
+jobs:
+  check:
+    name: Compare upstream vs published
+    runs-on: ubuntu-latest
+    steps:
+      - name: Detect and dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          UPSTREAM_GIT="https://repo.dec05eba.com/gpu-screen-recorder"
+          # Upstream often follows a release with patch releases within hours;
+          # wait until a tag has settled rather than building each one.
+          MIN_AGE_SECONDS=$((6 * 3600))
+
+          # No GitHub releases upstream: the newest plain X.Y.Z tag is the release.
+          up_ver=$(git ls-remote --tags --refs "$UPSTREAM_GIT" \
+            | awk '{sub("refs/tags/", "", $2); print $2}' \
+            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          if [ -z "$up_ver" ]; then
+            echo "Could not read upstream tags; aborting."
+            exit 1
+          fi
+          echo "Upstream: ${up_ver}"
+
+          # Our latest published release is "<ver>+<build>"; 404 -> empty -> build it.
+          ours=$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" -q .tag_name 2>/dev/null || echo "")
+          ours_ver="${ours%%+*}"
+          echo "Ours: ${ours:-<none>} -> ${ours_ver:-<none>}"
+
+          if [ "$up_ver" = "$ours_ver" ]; then
+            echo "Up to date."
+            exit 0
+          fi
+
+          git init -q tagcheck
+          git -C tagcheck fetch -q --depth 1 "$UPSTREAM_GIT" "refs/tags/${up_ver}"
+          tag_time=$(git -C tagcheck log -1 --format=%ct FETCH_HEAD)
+          age=$(( $(date +%s) - tag_time ))
+          if [ "$age" -lt "$MIN_AGE_SECONDS" ]; then
+            echo "Tag ${up_ver} is only $((age / 60)) minutes old; waiting for it to settle."
+            exit 0
+          fi
+
+          # Don't dispatch a duplicate while a build is already running/queued.
+          active=$(gh run list --workflow=release.yml --json status \
+            -q '[.[] | select(.status == "in_progress" or .status == "queued")] | length')
+          if [ "$active" -gt 0 ]; then
+            echo "A release.yml run is already active ($active); skipping this tick."
+            exit 0
+          fi
+
+          echo "New release detected: ${ours_ver:-<none>} -> ${up_ver}. Dispatching build."
+          gh workflow run release.yml -f "gsr_version=${up_ver}" -f build_version=1

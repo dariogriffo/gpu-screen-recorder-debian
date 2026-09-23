@@ -1,0 +1,60 @@
+Source: gpu-screen-recorder
+Section: video
+Priority: optional
+Maintainer: Dario Griffo <dariogriffo@gmail.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ meson,
+ pkgconf,
+ libwayland-bin,
+ libavcodec-dev,
+ libavformat-dev,
+ libavutil-dev,
+ libavfilter-dev,
+ libswresample-dev,
+ libx11-dev,
+ libxcomposite-dev,
+ libxrandr-dev,
+ libxfixes-dev,
+ libxdamage-dev,
+ libpulse-dev,
+ libva-dev,
+ libdrm-dev,
+ libwayland-dev,
+ libcap-dev,
+ libpipewire-0.3-dev,
+ libspa-0.2-dev,
+ libdbus-1-dev,
+ libvulkan-dev,
+Standards-Version: 4.7.0
+Homepage: https://git.dec05eba.com/gpu-screen-recorder/about/
+Rules-Requires-Root: no
+
+Package: gpu-screen-recorder
+Architecture: amd64
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ libcap2-bin,
+# Debian (forky/sid) and Ubuntu ship the same program split into several
+# binary packages that install the same paths as this one.
+Provides: gpu-screen-recorder-cli
+Conflicts:
+ gpu-screen-recorder-cli,
+ gpu-screen-recorder-dev,
+ gpu-screen-recorder-scripts,
+ gpu-screen-recorder-service,
+Replaces:
+ gpu-screen-recorder-cli,
+ gpu-screen-recorder-dev,
+ gpu-screen-recorder-scripts,
+ gpu-screen-recorder-service,
+Description: Shadowplay-like screen recorder that records using the GPU only
+ GPU Screen Recorder records a monitor or window with minimal impact on system
+ performance by capturing and encoding on the GPU, similar to ShadowPlay on
+ Windows. It works on X11 and Wayland with AMD, Intel and NVIDIA GPUs, and
+ supports replay buffers, streaming and screenshots.
+ .
+ This package includes the gpu-screen-recorder and gsr-cli commands, the
+ gsr-kms-server helper, the plugin header, upstream's helper scripts and a
+ systemd user service.

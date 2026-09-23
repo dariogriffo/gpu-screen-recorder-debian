@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@ --buildsystem=meson
+
+# capabilities=false: upstream's post-install hook runs setcap on the staged
+# gsr-kms-server, but a .deb does not carry file capabilities, so postinst
+# sets them on the installed binary instead.
+# nvidia_suspend_fix=false: that option drops a modprobe.d file which changes
+# NVIDIA driver behaviour system-wide; not something to impose on install.
+override_dh_auto_configure:
+	dh_auto_configure -- -Dcapabilities=false -Dnvidia_suspend_fix=false
+
+# The user service records the screen for as long as it runs. Ship it for
+# people to enable themselves; debhelper would otherwise enable it globally,
+# starting a recording for every user at login.
+override_dh_installsystemduser:
+	dh_installsystemduser --no-enable
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym
