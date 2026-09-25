@@ -89,7 +89,7 @@ jobs:
           name: source-artifact
           path: |
             gpu-screen-recorder_*.dsc
-            gpu-screen-recorder_*.debian.tar.xz
+            gpu-screen-recorder*_*.debian.tar.xz
 
   release:
     name: Release gpu-screen-recorder for Debian
@@ -121,10 +121,10 @@ jobs:
         with:
           draft: false
           files: |
-            gpu-screen-recorder_*.deb
+            gpu-screen-recorder*_*.deb
             gpu-screen-recorder_*.dsc
             gpu-screen-recorder_*.orig.tar.gz
-            gpu-screen-recorder_*.debian.tar.xz
+            gpu-screen-recorder*_*.debian.tar.xz
           name: ${{ inputs.gsr_version }}+${{ inputs.build_version }}
           tag_name: ${{ inputs.gsr_version }}+${{ inputs.build_version }}
           fail_on_unmatched_files: true

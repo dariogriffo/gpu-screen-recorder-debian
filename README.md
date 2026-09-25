@@ -42,6 +42,10 @@ install on Debian. If you're looking for the GPU Screen Recorder source code, se
 
 ## What's in the package
 
+The package is `gpu-screen-recorder-cli`, the same name Debian uses. Releases up
+to 6.1.3+1 called it `gpu-screen-recorder`; that name is now a transitional
+package that pulls in `gpu-screen-recorder-cli`, so `apt upgrade` moves you over.
+
 - `gpu-screen-recorder`, `gsr-cli` and `gsr-kms-server`. The package grants
   `gsr-kms-server` `cap_sys_admin` on install, as upstream does, so recording a
   monitor on AMD/Intel (or NVIDIA on Wayland) doesn't ask for a password.
@@ -53,7 +57,8 @@ install on Debian. If you're looking for the GPU Screen Recorder source code, se
 
 Not included: upstream's NVIDIA modprobe file (`gsr-nvidia.conf`), which changes
 the NVIDIA driver's suspend behaviour for the whole system. It replaces Debian's
-own `gpu-screen-recorder-cli` packages, which install the same files.
+`gpu-screen-recorder-dev`, `-scripts` and `-service` packages, whose files are
+all in this one.
 
 ## Install/Update
 
@@ -64,7 +69,7 @@ sudo install -d -m 0755 /etc/apt/keyrings
 curl -fsSL https://deb.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/keyrings/deb.griffo.io.gpg
 echo "deb [signed-by=/etc/apt/keyrings/deb.griffo.io.gpg] https://deb.griffo.io/apt $(lsb_release -sc 2>/dev/null) main" | sudo tee /etc/apt/sources.list.d/deb.griffo.io.list
 sudo apt update
-sudo apt install -y gpu-screen-recorder
+sudo apt install -y gpu-screen-recorder-cli
 ```
 
 ### Manual Installation

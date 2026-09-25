@@ -20,3 +20,8 @@ override_dh_installsystemduser:
 
 override_dh_strip:
 	dh_strip --no-automatic-dbgsym
+
+# Two binary packages now; install everything into the real one rather than
+# staging in debian/tmp.
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/gpu-screen-recorder-cli
