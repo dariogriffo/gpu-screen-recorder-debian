@@ -1,11 +1,11 @@
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dariogriffo/gpu-screen-recorder-debian/total)
-![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/dariogriffo/gpu-screen-recorder-debian/latest/total)
-![GitHub Release](https://img.shields.io/github/v/release/dariogriffo/gpu-screen-recorder-debian)
-![GitHub Release Date](https://img.shields.io/github/release-date/dariogriffo/gpu-screen-recorder-debian?display_date=published_at)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dariogriffo/gpu-screen-recorder-debian-cli/total)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/dariogriffo/gpu-screen-recorder-debian-cli/latest/total)
+![GitHub Release](https://img.shields.io/github/v/release/dariogriffo/gpu-screen-recorder-debian-cli)
+![GitHub Release Date](https://img.shields.io/github/release-date/dariogriffo/gpu-screen-recorder-debian-cli?display_date=published_at)
 
 <h1>
    <p align="center">
-     <a href="https://www.debian.org/"><img src="https://github.com/dariogriffo/gpu-screen-recorder-debian/blob/main/debian-logo.png" alt="Debian Logo" width="104"></a>
+     <a href="https://www.debian.org/"><img src="https://github.com/dariogriffo/gpu-screen-recorder-debian-cli/blob/main/debian-logo.png" alt="Debian Logo" width="104"></a>
      <br>GPU Screen Recorder for Debian
    </p>
 </h1>
@@ -75,7 +75,7 @@ sudo apt install -y gpu-screen-recorder-cli
 ### Manual Installation
 
 1. Download the .deb package for your Debian version available on
-   the [Releases](https://github.com/dariogriffo/gpu-screen-recorder-debian/releases) page.
+   the [Releases](https://github.com/dariogriffo/gpu-screen-recorder-debian-cli/releases) page.
 2. Install the downloaded .deb package.
 
 ```sh
